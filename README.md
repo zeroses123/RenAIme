@@ -9,9 +9,13 @@ Because the AI runs locally on your machine, no data is sent to external servers
 
 ## Key Features
 ✅ **Automatic File Detection** – Monitors a specified folder for new scanned PDFs or images.
+
 ✅ **OCR Processing** – Extracts text using Tesseract.
+
 ✅ **Local AI-Powered Renaming** – Uses an on-device LLM (Vicuna) for smart naming and classification.
+
 ✅ **Structured Organization** – Moves processed files to organized directories.
+
 ✅ **Privacy by Design** – All processing is done locally, preserving data confidentiality.
 
 ---
