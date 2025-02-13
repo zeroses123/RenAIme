@@ -1,5 +1,5 @@
 #!/bin/bash
-# https://github.com/zeroses123/ocr_ai_file_renamer
+# https://github.com/zeroses123/RenAIme
 # Usage: ./ai_scan.sh <directory>
 RED='\033[0;31m'
 GREEN='\033[0;32m'
