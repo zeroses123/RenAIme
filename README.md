@@ -19,6 +19,17 @@ Because the AI runs locally on your machine, no data is sent to external servers
 ✅ **Privacy by Design** – All processing is done locally, preserving data confidentiality.
 
 ---
+## How the script works
+1. Your Scanner or you place PDF documents or images with random names in a specific folder.
+2. Your Mac automatically detects the new document and runs an OCR on the document (OCR makes the document readable and searchable)
+3. The OCR Text of the document is beeing sent to a local Large Language Model (LLM Vicuna 13B) via the LM Studio Local Server running on your localhost.
+4. The prompt in the Script tells the LLM what folders it should use and what kind of documents should go into that folder. The prompt also tells the LLM to define a filename for the document including the date according to the content of the document.
+5. The LLM returns a JSON to the Script including the filename and the folder.
+6. The Script then moves the old document into a Backup Folder and copies the new Readable PDF-File into the folder the LLM chose
+7. The Script also creates a TEMP-Folder for the temporary image-files it creates
+8. It also creates a log-file in the same folder
+
+---
 
 ## Installation Guide (macOS)
 
@@ -48,7 +59,7 @@ Because the AI runs locally on your machine, no data is sent to external servers
    Download and install [LM Studio](https://lmstudio.ai), which is needed to run the local AI model.
 
 6. **Download the Vicuna LLM Model**  
-   In LM Studio, download the [Vicuna 13B v1.5 16K model](https://huggingface.co/TheBloke/vicuna-13B-v1.5-16K-GGUF/blob/main/vicuna-13b-v1.5-16k.Q4_K_M.gguf).
+   Download the Vicuna LLM 13B Modell here: [Vicuna 13B v1.5 16K model](https://huggingface.co/TheBloke/vicuna-13B-v1.5-16K-GGUF/blob/main/vicuna-13b-v1.5-16k.Q4_K_M.gguf).
 
 7. **Place the Model in the Correct Directory**  
    Copy the model file to:  
@@ -92,7 +103,11 @@ Because the AI runs locally on your machine, no data is sent to external servers
 
 That’s it! 🎉 Your local AI-powered OCR pipeline is now ready, ensuring that everything—scanning, text extraction, and renaming—stays secure on your own machine. Enjoy your automated workflow!
 
-# What to edit in the ai_scan.sh file
+## What to edit in the ai_scan.sh file
 
 - Edit the prompt to fit your need
 - It might be that your installation of tesseract and poppler is in a different directory. Adjust the 3 lines to your Directory where brew installed it.
+
+## Issues
+- Error on big PDF-Files
+- 
