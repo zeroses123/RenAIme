@@ -1,5 +1,5 @@
 #!/bin/bash
-# https://github.com/zeroses123/RenAIme
+# https://github.com/zeroses123/ocr_ai_file_renamer
 # Usage: ./ai_scan.sh <directory>
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -41,23 +41,49 @@ find "$DIR" -maxdepth 1 -type f \( -iname '*.pdf' -o -iname '*.jpg' -o -iname '*
     log "Starting OCR..."
     
     if [[ "$FILE" == *.pdf ]]; then
+        # Verbesserte PDF-Verarbeitung
         IMAGE="$TEMP_DIR/${FILE##*/}.png"
-        /usr/local/bin/pdftoppm "$FILE" "$TEMP_DIR/${FILE##*/}" -png -f 1 -singlefile >/dev/null 2>&1
-        [ -f "$IMAGE" ] && OCR_TEXT=$(/usr/local/bin/tesseract "$IMAGE" - -l deu 2>/dev/null) && rm "$IMAGE"
+        if ! pdftoppm "$FILE" "$TEMP_DIR/${FILE##*/}" -png -f 1 -singlefile >/dev/null 2>&1; then
+            log "Error: PDF to PNG conversion failed"
+            continue
+        fi
+        if [ ! -f "$IMAGE" ]; then
+            log "Error: PDF conversion did not produce image file"
+            continue
+        fi
+        OCR_TEXT=$(/opt/homebrew/bin/tesseract "$IMAGE" - -l deu 2>/dev/null)
+        # Erstelle OCR-PDF direkt vom Bild
+        if ! /opt/homebrew/bin/tesseract "$IMAGE" "$TEMP_DIR/${FILE##*/}_ocr" -l deu pdf 2>/dev/null; then
+            log "Error: OCR PDF creation failed"
+            rm -f "$IMAGE"
+            continue
+        fi
+        rm -f "$IMAGE"
     else
-        /usr/local/bin/tesseract "$FILE" "$TEMP_DIR/${FILE##*/}_ocr" -l deu pdf 2>/dev/null
-        OCR_TEXT=$(/usr/local/bin/tesseract "$FILE" - -l deu 2>/dev/null)
+        # Direkte Bildverarbeitung
+        if ! /opt/homebrew/bin/tesseract "$FILE" "$TEMP_DIR/${FILE##*/}_ocr" -l deu pdf 2>/dev/null; then
+            log "Error: OCR PDF creation failed"
+            continue
+        fi
+        OCR_TEXT=$(/opt/homebrew/bin/tesseract "$FILE" - -l deu 2>/dev/null)
     fi
     
     [ -z "$OCR_TEXT" ] && log "OCR failed! Skipping." && continue
-    log "OCR completed."
+    log "OCR completed successfully."
     
     MOD_DATE=$(stat -f "%Sm" -t "%Y-%m-%d" "$FILE")
-    log "Sending to AI for renaming..."
+    log "Extracting filename from OCR text..."
     
-    # KI-Request an ChatGPT-Server
-    RESPONSE=$(curl -s -X POST http://localhost:1234/v1/chat/completions \
-        -H "Content-Type: application/json" --data @- <<EOF
+    # Fallback wenn kein KI-Server verfügbar ist
+    if ! curl -s -m 1 http://localhost:1234 > /dev/null 2>&1; then
+        log "KI-Server nicht erreichbar, verwende Standardbenennung"
+        FILE_NAME_FROM_AI=$(echo "$FILE" | sed 's/.*\///' | sed 's/\.[^.]*$//')
+        DATE_FROM_AI="$MOD_DATE"
+        FOLDER_FROM_AI="Inbox"
+    else
+        # KI-Request wie bisher
+        RESPONSE=$(curl -s -X POST http://localhost:1234/v1/chat/completions \
+            -H "Content-Type: application/json" --data @- <<EOF
 {
   "messages": [
     {
@@ -74,27 +100,35 @@ find "$DIR" -maxdepth 1 -type f \( -iname '*.pdf' -o -iname '*.jpg' -o -iname '*
   "stream": false
 }
 EOF
-)
+        )
+        # ...existing code for parsing AI response...
+    fi
 
-if [ -z "$RESPONSE" ]; then
-    log "Fehler: Keine Antwort von der KI erhalten!"
-    continue
-fi
+    if [ -z "$RESPONSE" ]; then
+        log "Fehler: Keine Antwort von der KI erhalten!"
+        continue
+    fi
 
-CONTENT=$(echo "$RESPONSE" | sed -e 's/^json//' -e 's/^//' -e 's/`$//')
+    CONTENT=$(echo "$RESPONSE" | jq -r '.choices[0].message.content' 2>/dev/null)
+    if [ $? -ne 0 ]; then
+        log "Error: Failed to parse AI response"
+        continue
+    fi
 
+    FILE_NAME_FROM_AI=$(echo "$CONTENT" | jq -r '.FileName' 2>/dev/null)
+    DATE_FROM_AI=$(echo "$CONTENT" | jq -r '.Date' 2>/dev/null)
+    MESSAGE_FROM_AI=$(echo "$CONTENT" | jq -c '.Message' 2>/dev/null)
+    FOLDER_FROM_AI=$(echo "$CONTENT" | jq -r '.Folder' 2>/dev/null)
 
-CONTENT=$(echo "$RESPONSE" | jq -r '.choices[0].message.content' 2>/dev/null)
-FILE_NAME_FROM_AI=$(echo "$CONTENT" | jq -r '.FileName' 2>/dev/null)
-DATE_FROM_AI=$(echo "$CONTENT" | jq -r '.Date' 2>/dev/null)
-MESSAGE_FROM_AI=$(echo "$CONTENT" | jq -c '.Message' 2>/dev/null)
-FOLDER_FROM_AI=$(echo "$CONTENT" | jq -r '.Folder' 2>/dev/null)
+    if [ -z "$FILE_NAME_FROM_AI" ] || [ "$FILE_NAME_FROM_AI" == "null" ]; then
+        log "Fehler: 'FileName' aus JSON ist leer/null. KI-Antwort:\n$CONTENT"
+        continue
+    fi
 
-if [ -z "$FILE_NAME_FROM_AI" ] || [ "$FILE_NAME_FROM_AI" == "null" ]; then
-    log "Fehler: 'FileName' aus JSON ist leer/null. KI-Antwort:\n$CONTENT"
-    continue
-fi
-
+    if [ -z "$FOLDER_FROM_AI" ] || [ "$FOLDER_FROM_AI" == "null" ]; then
+        log "Error: Invalid folder name from AI"
+        continue
+    fi
 
     if [ -z "$DATE_FROM_AI" ] || [ "$DATE_FROM_AI" == "null" ]; then
         DATE_FROM_AI="$MOD_DATE"
@@ -109,29 +143,35 @@ fi
         continue
     fi
 
-    NEW_FILENAME="$DIR/$FOLDER_FROM_AI/${CLEAN_FILENAME}_${DATE_FROM_AI}.pdf"
-
+    NEW_FILENAME="$DIR/$FOLDER_FROM_AI/${DATE_FROM_AI}_${CLEAN_FILENAME}.pdf"
+    
     mkdir -p "$DIR/$FOLDER_FROM_AI"
-    log "$FILE"
-    if [[ "$FILE" == *.pdf ]]; then
-        pdftk "$TEMP_DIR/${FILE##*/}_ocr.pdf" cat output "$NEW_FILENAME"
-        mv "$TEMP_DIR/${FILE##*/}_ocr.pdf" "$NEW_FILENAME"
-        log "File $NEW_FILENAME created successfully"
-    else
-        if [ -f "$TEMP_DIR/${FILE##*/}_ocr.pdf" ]; then
-            mv "$TEMP_DIR/${FILE##*/}_ocr.pdf" "$NEW_FILENAME"
-            log "File renamed and moved:\n   Original: $FILE\n   Neu: $NEW_FILENAME"
-            log "Additional Info from AI: $MESSAGE_FROM_AI"
-        else
-            log "Error: File $TEMP_DIR/${FILE##*/}_ocr.pdf already exists!"
-            continue
-        fi
+    
+    # Prüfe ob die OCR-PDF existiert
+    OCR_PDF="$TEMP_DIR/${FILE##*/}_ocr.pdf"
+    if [ ! -f "$OCR_PDF" ]; then
+        log "Error: OCR PDF file not found at $OCR_PDF"
+        continue
     fi
-
-    mv "$FILE" "$BACKUP_DIR/"
-    log "Backup created."
+    
+    # Verschiebe die Datei
+    if ! mv "$OCR_PDF" "$NEW_FILENAME"; then
+        log "Error: Failed to move OCR PDF file to $NEW_FILENAME"
+        continue
+    fi
+    
+    log "Datei wurde umbenannt und verschoben:\n   Original: $FILE\n   Neu: $NEW_FILENAME"
+    log "Zusatzinfo der KI (Message): $MESSAGE_FROM_AI"
+    
+    # Backup erstellen
+    if ! mv "$FILE" "$BACKUP_DIR/"; then
+        log "Error: Failed to create backup"
+        continue
+    fi
+    log "Backup created successfully."
     log "--------------------------------------"
 done
 
+# Aufräumen
 rm -rf "$TEMP_DIR"
 log "Cleanup completed!"
