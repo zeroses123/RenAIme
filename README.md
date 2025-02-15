@@ -1,4 +1,4 @@
-# PDF & Image OCR: Automatic Scanning, Renaming, and Organizing with AI
+# PDF & Image OCR: Automatic Scanning, Renaming, and Organizing with AI on MacOS
 
 ## Overview
 This tool automatically detects new scanned PDFs (or images) in a specified folder, extracts text using **OCR (Optical Character Recognition)**, and intelligently renames each file based on its content. A **local LLM (Large Language Model)** then analyzes the extracted text to create meaningful filenames (including dates) and moves the files into appropriate destination folders.
