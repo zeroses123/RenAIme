@@ -51,7 +51,7 @@ Because the AI runs locally on your machine, no data is sent to external servers
 4. **Download the Mistral-Nemo-Instruct-2407**  
    In LM Studio click "Explore" and Search for the "Mistral-Nemo-Instruct-2407" Model and download it. 
 
-5. **Load the Vicuna Model in LM Studio**  
+5. **Load the installed Model in LM Studio**  
    - Open LM Studio.  
    - Click **Developer** on the left side.  
    - On Top of the Window, Load your Mistral Nemo model.  
