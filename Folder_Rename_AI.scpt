@@ -2,7 +2,7 @@ on adding folder items to this_folder after receiving added_items
     -- Setze PATH Umgebungsvariable explizit
     set folderPath to POSIX path of this_folder
 	set homeFolder to POSIX path of (path to home folder)
-	set scriptPath to quoted form of (homeFolder & "Documents/scan.sh")
+	set scriptPath to quoted form of (homeFolder & "Documents/ai_scan.sh")
     -- set scriptPath to quoted form of "YOUR/FiLEPATH/Goes_here/ai_scan.sh" -- Unquote this line if you want to set an absolute path to your Script
     
     -- Erstelle einen temporären Shell-Script für die Umgebungseinrichtung
