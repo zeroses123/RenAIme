@@ -162,7 +162,7 @@ find "$DIR" -maxdepth 1 -type f \( -iname '*.pdf' -o -iname '*.jpg' -o -iname '*
 },
 {
   "role": "user",
-  "content": "### Human:\nHier ist der Inhalt der Datei:\n$(sanitize_text "$OCR_TEXT")\n\nDas Änderungsdatum der Datei ist: $MOD_DATE\nBitte erstelle das JSON laut Anweisungen. Gib nur das JSON aus ohne den Denkvorgang auszugeben.\n### Assistant:"
+  "content": "### Human:\nHier ist der Inhalt der Datei:\n$(sanitize_text "$OCR_TEXT")\n\nDas Änderungsdatum der Datei ist: $MOD_DATE\nBitte erstelle das JSON laut Anweisungen. \n### Assistant:"
 }
   ],
   "temperature": 0,
