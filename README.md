@@ -40,7 +40,7 @@ Because the AI runs locally on your machine, no data is sent to external servers
    Visit [brew.sh](https://brew.sh) and follow the instructions.
 
 2. **Install Poppler, Tesseract, jq and curl via Terminal**  
-   Poppler is a library for processing PDFs. Tesseract is an OCR engine that extracts text from images and PDFs. Tesseract Land is for better recognition in languages like German or Spanish. Jq and curl should already be installed. 
+   Poppler is a library for processing PDFs. Tesseract is an OCR engine that extracts text from images and PDFs. Tesseract Lang is for better recognition in languages like German or Spanish. Jq and curl should already be installed. 
    ```bash
    brew install poppler tesseract tesseract-lang jq curl 
    ```
@@ -65,7 +65,7 @@ Because the AI runs locally on your machine, no data is sent to external servers
    which tesseract
    ```  
    Update these lines of code in the **ai_scan.sh** script if necessary:
-      PDFTOPPM="/usr/local/bin/pdftoppm"     
+      PDFTOPPM="/opt/homebrew/bin/pdftoppm"     
       TESSERACT="/opt/homebrew/bin/tesseract"
 
 
