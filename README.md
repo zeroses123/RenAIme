@@ -65,11 +65,12 @@ Because the AI runs locally on your machine, no data is sent to external servers
    which tesseract
    ```  
    Update these lines of code in the **ai_scan.sh** script if necessary:
+    ```bash
       PDFTOPPM="/opt/homebrew/bin/pdftoppm"     
       TESSERACT="/opt/homebrew/bin/tesseract"
+    ```  
 
-
-8. **Copy Files from the Repository & Edit the AppleScript for Folder Actions**  
+9. **Copy Files from the Repository & Edit the AppleScript for Folder Actions**  
    - Open **Folder_Rename_AI.scpt** from the repository on your computer with a text editor.  
    - Download the **ai_scan.sh** File into your Documents Folder.
    - Make the File Executable by opening your Terminal and Running ``` chmod +x ~/Documents/ai_scan.sh ```
