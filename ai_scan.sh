@@ -7,7 +7,7 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m'
 
-PDFTOPPM="/usr/local/bin/pdftoppm"      # Type in Terminal: which pdftoppm and replace the path here
+PDFTOPPM="/opt/homebrew/bin/pdftoppm"      # Type in Terminal: which pdftoppm and replace the path here
 TESSERACT="/opt/homebrew/bin/tesseract" # Type in Terminal: which tesseract and replace the path here
 
 sanitize_text() {
