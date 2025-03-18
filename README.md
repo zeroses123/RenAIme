@@ -7,14 +7,18 @@ Because the AI runs locally on your machine, no data is sent to external servers
 
 ---
 
+## Hardware Requirements
+✅ ** 16 GB RAM ** (LLM Model is about 8 GB large and loaded into the RAM)
+✅ ** Apple Macbook, iMac ... **
+
 ## Key Features
 ✅ **Automatic File Detection** – Monitors a specified folder for new scanned PDFs or images.
 
 ✅ **OCR Processing** – Extracts text using Tesseract.
 
-✅ **Local AI-Powered Renaming** – Uses an on-device LLM (Vicuna or Mistral-Nemo) for smart naming and classification.
+✅ **Local AI-Powered Renaming** – Uses an on-device LLM (Mistral-Nemo) for smart naming and classification.
 
-✅ **Structured Organization** – Moves processed files to organized directories.
+✅ **Structured Organization** – Moves processed OCR - files to organized directories.
 
 ✅ **Privacy by Design** – All processing is done locally, preserving data confidentiality.
 
@@ -32,73 +36,51 @@ Because the AI runs locally on your machine, no data is sent to external servers
 ---
 
 ## Installation Guide (macOS)
-
 1. **Install Homebrew (if not already installed)**  
    Visit [brew.sh](https://brew.sh) and follow the instructions.
 
-2. **Install Poppler via Terminal**  
-   Poppler is a library for processing PDFs. Install it via:
+2. **Install Poppler, Tesseract, jq and curl via Terminal**  
+   Poppler is a library for processing PDFs. Tesseract is an OCR engine that extracts text from images and PDFs. Tesseract Land is for better recognition in languages like German or Spanish. Jq and curl should already be installed. 
    ```bash
-   brew install poppler
+   brew install poppler tesseract tesseract-lang jq curl 
    ```
 
-3. **Install Tesseract via Terminal**  
-   Tesseract is an OCR engine that extracts text from images and PDFs:
-   ```bash
-   brew install tesseract
-   ```
-
-4. **Install Additional Language Packs (Optional)**  
-   For better recognition in languages like German or Spanish, install the relevant packs:
-   ```bash
-   brew install tesseract-lang
-   ```
-   See [this link](https://github.com/tesseract-ocr/tesseract/blob/main/doc/tesseract.1.asc#languages) for more details.
-
-5. **Install LM Studio**  
+3. **Install LM Studio**  
    Download and install [LM Studio](https://lmstudio.ai), which is needed to run the local AI model.
 
-6. **Download the Vicuna LLM Model or Mistral-Nemo-Instruct-2407**  
-   Download the Vicuna LLM 13B Modell here: [Vicuna 13B v1.5 16K model](https://huggingface.co/TheBloke/vicuna-13B-v1.5-16K-GGUF/blob/main/vicuna-13b-v1.5-16k.Q4_K_M.gguf).
-   Or Download the Mistral-Nemo-Instruct-2407 in the LM Studio App (Best Experience with Renaming so far)
+4. **Download the Mistral-Nemo-Instruct-2407**  
+   In LM Studio click "Explore" and Search for the "Mistral-Nemo-Instruct-2407" Model and download it. 
 
-8. **Place the Model in the Correct Directory**  
-   Copy the model file to:  
-   ```
-   /Users/<your_username>/.lmstudio/models
-   ```  
-   *(Replace `<your_username>` with your actual username.)*
-
-9. **Load the Vicuna Model in LM Studio**  
+5. **Load the Vicuna Model in LM Studio**  
    - Open LM Studio.  
    - Click **Developer** on the left side.  
-   - Load your Vicuna model.  
-   - Start the **Local Server** from within LM Studio.
+   - On Top of the Window, Load your Mistral Nemo model.  
+   - Start the **Local Server** from within LM Studio. (Click on "Status Stopped running" and make sure it is green and running)
+   - LM Studio now waits for incoming Requests from your Script
 
-10. **Test the Script**  
-   Open Terminal and run:  
-   ```bash
-   ./ai_scan.sh ./
-   ```
-
-11. **Check Poppler and Tesseract Locations**  
+7. **Check Poppler and Tesseract Locations**  
    In Terminal, run:  
    ```bash
    which pdftoppm
    which tesseract
    ```  
-   Update these paths in the **ai_scan.sh** script if necessary.
+   Update these lines of code in the **ai_scan.sh** script if necessary:
+      PDFTOPPM="/usr/local/bin/pdftoppm"     
+      TESSERACT="/opt/homebrew/bin/tesseract"
 
-11. **Edit the AppleScript for Folder Actions**  
-   - Open **Folder_Rename_AI.scpt** from the repository.  
-   - Replace the path to your `ai_scan.sh` file.  
-   - Copy **Folder_Rename_AI.scpt** to:  
+
+8. **Edit the AppleScript for Folder Actions**  
+   - Open **Folder_Rename_AI.scpt** from the repository on your computer with a text editor.  
+   - Download the **ai_scan.sh** File into your Documents Folder. If you want to place it somewhere else you need to delete this line in the **Folder_Rename_AI.scpt**: set scriptPath to quoted form of (homeFolder & "Documents/scan.sh") and uncomment the line set scriptPath to quoted form of "YOUR/FiLEPATH/Goes_here/ai_scan.sh" -- Unquote this line if you want to set an absolute path to your Script
+   - to Copy a Filepath of a File in Finder, right click on the ai_scan.sh file and Hold the ⌥ option Key. Click on Copy Filepath.
+   - Open the /Library/Scripts/Folder Action Scripts/ Folder by opening Finder and pressing **⌘ Cmd** + **⇧ Shift** + **G** and enter the Folder path /Library/Scripts/Folder Action Scripts/
+   - Copy the **Folder_Rename_AI.scpt** to that Folder:  
      ```
      /Library/Scripts/Folder Action Scripts/
      ```
 
-12. **Assign the Script to a Folder**  
-   - Right-click the target folder.  
+10. **Let's build the Automation, whenever a new file has been edited or copied --> Run the Script**  
+   - Right-click the target folder in Finder.  
    - Go to **Services** → **Folder Actions Setup...**  
    - In the **Folder Actions** window, click the “+” button to add the **Folder_Rename_AI** script to that folder.
 
@@ -106,9 +88,9 @@ That’s it! 🎉 Your local AI-powered OCR pipeline is now ready, ensuring that
 
 ## What to edit in the ai_scan.sh file
 
-- Edit the prompt to fit your need
+- Edit the prompt to fit your need. 
 - It might be that your installation of tesseract and poppler is in a different directory. Adjust the 3 lines to your Directory where brew installed it.
 
 ## Issues
-- Error on big PDF-Files
-- 
+- Error on huge PDF-Files
+- After a Computer Restart the LM-Model needs to be loaded again in LM-Studio
