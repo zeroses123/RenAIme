@@ -82,6 +82,7 @@ Because the AI runs locally on your machine, no data is sent to external servers
      ```bash
         set scriptPath to quoted form of "YOUR/FiLEPATH/Goes_here/ai_scan.sh" -- Unquote this line if you want to set an absolute path to your Script
      ```
+     and of course run the ``` chmod +x YOUR/NEW_FILEPATH/ai_scan.sh ```
    - to Copy a Filepath of a File in Finder, right click on the ai_scan.sh file and Hold the ⌥ option Key. Click on Copy Filepath.
    - Open the /Library/Scripts/Folder Action Scripts/ Folder by opening Finder and pressing **⌘ Cmd** + **⇧ Shift** + **G** and enter the Folder path /Library/Scripts/Folder Action Scripts/
    - Copy the **Folder_Rename_AI.scpt** to that Folder:  
