@@ -72,7 +72,7 @@ Because the AI runs locally on your machine, no data is sent to external servers
 8. **Copy Files from the Repository & Edit the AppleScript for Folder Actions**  
    - Open **Folder_Rename_AI.scpt** from the repository on your computer with a text editor.  
    - Download the **ai_scan.sh** File into your Documents Folder.
-   - Make the File Executable by opening your Terminal and Running ```bash chmod +x ~/Documents/ai_scan.sh ```
+   - Make the File Executable by opening your Terminal and Running ``` chmod +x ~/Documents/ai_scan.sh ```
    - If you want to place it somewhere else you need to delete this line in the **Folder_Rename_AI.scpt**: set scriptPath to quoted form of (homeFolder & "Documents/scan.sh") and uncomment the line set scriptPath to quoted form of "YOUR/FiLEPATH/Goes_here/ai_scan.sh" -- Unquote this line if you want to set an absolute path to your Script
    - to Copy a Filepath of a File in Finder, right click on the ai_scan.sh file and Hold the ⌥ option Key. Click on Copy Filepath.
    - Open the /Library/Scripts/Folder Action Scripts/ Folder by opening Finder and pressing **⌘ Cmd** + **⇧ Shift** + **G** and enter the Folder path /Library/Scripts/Folder Action Scripts/
