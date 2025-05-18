@@ -9,6 +9,7 @@ Because the AI runs locally on your machine, no data is sent to external servers
 
 ## Hardware Requirements
 ✅ **16 GB RAM** (LLM Model is about 8 GB large and loaded into the RAM)
+
 ✅ **Apple Macbook, iMac ...**
 
 ## Key Features
